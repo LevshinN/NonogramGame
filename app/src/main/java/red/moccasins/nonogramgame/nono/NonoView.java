@@ -22,6 +22,8 @@ public class NonoView extends View {
 
     private GestureDetector gestureDetector;
 
+    private int inputMode = 0;
+
     public NonoView(Context context) {
         super(context);
         init();
@@ -39,13 +41,6 @@ public class NonoView extends View {
     }
 
     private GestureDetector.OnGestureListener gestureListener = new GestureDetector.SimpleOnGestureListener() {
-
-        public boolean onDown(MotionEvent e) {
-            boolean touch = nonogram.SelectCell(e.getX(), e.getY());
-            if (touch) invalidate();
-            return touch;
-        }
-
     };
 
     public void InitEmptyNonogram(int width, int height) {
@@ -54,14 +49,6 @@ public class NonoView extends View {
 
     public void InitNewNonogram( String task ) {
         nonogram = new Nonogram(task);
-    }
-
-    public void AddVParam(int pos, int value) {
-        nonogram.verticalParams.get(pos).add(value);
-    }
-
-    public void  AddHParam(int pos, int value) {
-        nonogram.horizontalParams.get(pos).add(value);
     }
 
 
@@ -87,10 +74,10 @@ public class NonoView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = MotionEventCompat.getActionMasked(event);
-        boolean touch = false;
+        boolean touch;
         switch(action) {
             case (MotionEvent.ACTION_DOWN):
-                touch = nonogram.SelectCell(event.getX(), event.getY());
+                touch = nonogram.StartSelectCell(event.getX(), event.getY(), inputMode);
                 if (touch) {
                     invalidate();
                     return true;
@@ -98,7 +85,7 @@ public class NonoView extends View {
                     return super.onTouchEvent(event);
                 }
             case (MotionEvent.ACTION_MOVE):
-                touch = nonogram.SelectCell(event.getX(), event.getY());
+                touch = nonogram.KeepSelectCell(event.getX(), event.getY(), inputMode);
                 if (touch) {
                     invalidate();
                     return true;
@@ -106,7 +93,7 @@ public class NonoView extends View {
                     return super.onTouchEvent(event);
                 }
             case (MotionEvent.ACTION_UP):
-                touch = nonogram.SelectCell(event.getX(), event.getY());
+                touch = nonogram.KeepSelectCell(event.getX(), event.getY(), inputMode);
                 if (touch) {
                     invalidate();
                     return true;
@@ -118,5 +105,9 @@ public class NonoView extends View {
             default:
                 return super.onTouchEvent(event) || gestureDetector.onTouchEvent(event);
         }
+    }
+
+    public void setInputMode(int mode) {
+        inputMode = mode;
     }
 }

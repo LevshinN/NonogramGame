@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
+
+    <item
+        android:icon="@android:color/transparent"
+        android:title="Пусто"
+        app:showAsAction="always"
+        android:enabled="false"/>
+
+    <item
+        android:id="@+id/action_fill"
+        android:icon="@drawable/ic_cell_filled_white"
+        android:title="Закрасить"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_cross"
+        android:icon="@drawable/ic_cell_crossed_white"
+        android:title="Пометить пустым"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_space"
+        android:icon="@drawable/ic_cell_empty_white"
+        android:title="Стереть"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_move"
+        android:icon="@drawable/ic_open_with_white_24dp"
+        android:title="Двигать"
+        app:showAsAction="always"/>
+
+    <item
+        android:icon="@android:color/transparent"
+        android:title="Пусто"
+        app:showAsAction="always"
+        android:enabled="false"/>
+
+    <!--<item-->
+        <!--android:id="@+id/action_move"-->
+        <!--android:icon="@drawable/ic_move_black_48dp"-->
+        <!--android:title="Закрасить"-->
+        <!--app:showAsAction="always"/>-->
+
+    <!--<item-->
+        <!--android:id="@+id/action_draw"-->
+        <!--android:icon="@drawable/ic_draw_black_48dp"-->
+        <!--android:title="Рисовать"-->
+        <!--app:showAsAction="always"/>-->
+
+</menu>

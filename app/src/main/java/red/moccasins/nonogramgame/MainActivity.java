@@ -12,11 +12,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
-import android.view.WindowManager;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -41,8 +38,11 @@ public class MainActivity extends AppCompatActivity
         decorView.setSystemUiVisibility(uiOptions);
 
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.topToolbar);
         setSupportActionBar(toolbar);
+
+        initToolbars();
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab1);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -143,6 +143,41 @@ public class MainActivity extends AppCompatActivity
             i = is.read();
         }
         return  baos.toString();
+    }
+
+    private void initToolbars() {
+        Toolbar toolbarBottomLeft = (Toolbar) findViewById(R.id.bottomToolbarLeft);
+        Toolbar toolbarBottomCenter = (Toolbar) findViewById(R.id.bottomToolbarCenter);
+        Toolbar toolbarBottomRight = (Toolbar) findViewById(R.id.bottomToolbarRight);
+
+        Toolbar.OnMenuItemClickListener listener = new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch(item.getItemId()){
+                    case R.id.action_fill:
+                        mNonogramTable.setInputMode(1);
+                        break;
+                    case R.id.action_cross:
+                        mNonogramTable.setInputMode(2);
+                        break;
+                    case R.id.action_space:
+                        mNonogramTable.setInputMode(0);
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        };
+
+        toolbarBottomLeft.setOnMenuItemClickListener(listener);
+        toolbarBottomCenter.setOnMenuItemClickListener(listener);
+        toolbarBottomRight.setOnMenuItemClickListener(listener);
+
+        // Inflate a menu to be displayed in the toolbar
+        toolbarBottomLeft.inflateMenu(R.menu.options_menu_left);
+        toolbarBottomCenter.inflateMenu(R.menu.options_menu_center);
+        toolbarBottomRight.inflateMenu(R.menu.options_menu_right);
     }
 
 }

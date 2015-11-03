@@ -49,6 +49,12 @@ public class Nonogram {
 
     private ArrayList<ArrayList<Boolean>> solution;
 
+    private SolutionProcess solutionProcess;
+
+    private SolutionProcess temporarySolution;
+    private int startMoveX;
+    private int startMoveY;
+
     public Nonogram(int width, int height) {
         initSize(width, height);
     }
@@ -110,6 +116,8 @@ public class Nonogram {
 
         verticalParams = new ArrayList<>(width);
         horizontalParams = new ArrayList<>(height);
+
+        solutionProcess = new SolutionProcess(width, height);
     }
 
     public void initializeTable(float measureWidth, float measureHeight, Context context){
@@ -244,9 +252,38 @@ public class Nonogram {
         }
 
 
+        // Закрашиваем клетки согласно решению
+        
+
+
     }
 
-    public boolean SelectCell(float x, float y) {
+    public boolean StartSelectCell(float x, float y, int type) {
+        boolean result = updateSelected(x, y);
+        if (result) {
+            StartMove(selectedColumn, selectedRow);
+        }
+        return result;
+    }
+
+    public boolean KeepSelectCell(float x, float y, int type) {
+        boolean result = updateSelected(x, y);
+        if (result) {
+            solutionProcess = temporarySolution;
+            solutionProcess.AddMove(startMoveX, startMoveY, selectedColumn, selectedRow, type);
+        }
+        return result;
+    }
+
+    public boolean EndSelectCell(float x, float y, int type) {
+        boolean result = updateSelected(x, y);
+        if (result) {
+            endMove(selectedColumn, selectedRow, type);
+        }
+        return result;
+    }
+
+    private boolean updateSelected(float x, float y) {
         if (x < startX
                 || y < startY
                 || x > startX + cellSize * (paramsWidth + width)
@@ -257,6 +294,19 @@ public class Nonogram {
             selectedRow = (int)((y - startY) / cellSize);
             return true;
         }
+    }
+
+    private void StartMove(int x, int y) {
+        temporarySolution = solutionProcess;
+        startMoveX = x;
+        startMoveY = y;
+    }
+
+    private void endMove(int x, int y, int type) {
+        temporarySolution.AddMove(startMoveX, startMoveY, x, y, type);
+        startMoveX = -1;
+        startMoveY = -1;
+        solutionProcess = temporarySolution;
     }
 
 }
