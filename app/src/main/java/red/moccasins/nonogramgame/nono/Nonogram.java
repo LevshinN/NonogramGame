@@ -34,8 +34,8 @@ public class Nonogram {
 
     private Paint tablePen;
 
-    private int selectedRow;
-    private int selectedColumn;
+    private int selectedX;
+    private int selectedY;
 
     private static final float margin = 5.0f;
     private static final float tinyLineSize = 1.0f;
@@ -111,8 +111,8 @@ public class Nonogram {
 
         cellSize = 0;
 
-        selectedColumn = -1;
-        selectedRow = -1;
+        selectedX = -1;
+        selectedY = -1;
 
         verticalParams = new ArrayList<>(width);
         horizontalParams = new ArrayList<>(height);
@@ -142,20 +142,20 @@ public class Nonogram {
 
         // Закрашиваем выделенный столбец и строку
         tablePen.setStyle(Paint.Style.FILL);
-        if (selectedRow >= paramsHeight && selectedColumn >= paramsWidth) {
+        if (selectedX >= 0 && selectedY >= 0) {
 
             tablePen.setStrokeWidth(tinyLineSize);
             tablePen.setColor(selectedCellColor);
 
-            canvas.drawRect(startX + selectedColumn * cellSize,
+            canvas.drawRect(startX + (selectedX + paramsWidth) * cellSize,
                     startY,
-                    startX + selectedColumn * cellSize + cellSize,
+                    startX + (selectedX + paramsWidth) * cellSize + cellSize,
                     startY + (paramsHeight + height) * cellSize, tablePen);
 
             canvas.drawRect(startX,
-                    startY + selectedRow * cellSize,
+                    startY + (selectedY + paramsHeight) * cellSize,
                     startX + (paramsWidth + width) * cellSize,
-                    startY + selectedRow * cellSize + cellSize, tablePen);
+                    startY + (selectedY + paramsHeight) * cellSize + cellSize, tablePen);
         }
 
         // Рисуем линии
@@ -253,6 +253,35 @@ public class Nonogram {
 
 
         // Закрашиваем клетки согласно решению
+        tablePen.setColor(tableColor);
+        tablePen.setStyle(Paint.Style.FILL);
+        for (int i = 0; i < width; ++i) {
+            for (int j = 0; j < height; ++j) {
+                switch (solutionProcess.GetCell(i,j)) {
+                    case 0:
+                        break;
+                    case 1:
+                        canvas.drawRect(startX + (i + paramsWidth) * cellSize,
+                                startY + (j + paramsHeight) * cellSize,
+                                startX + (i + paramsWidth) * cellSize + cellSize,
+                                startY + (j + paramsHeight) * cellSize + cellSize,
+                                tablePen);
+                        break;
+                    case 2:
+                        canvas.drawLine(startX + (i + paramsWidth) * cellSize,
+                                startY + (j + paramsHeight) * cellSize,
+                                startX + (i + paramsWidth) * cellSize + cellSize,
+                                startY + (j + paramsHeight) * cellSize + cellSize,
+                                tablePen);
+                        canvas.drawLine(startX + (i + paramsWidth) * cellSize + cellSize,
+                                startY + (j + paramsHeight) * cellSize,
+                                startX + (i + paramsWidth) * cellSize,
+                                startY + (j + paramsHeight) * cellSize + cellSize,
+                                tablePen);
+                        break;
+                }
+            }
+        }
         
 
 
@@ -261,7 +290,7 @@ public class Nonogram {
     public boolean StartSelectCell(float x, float y, int type) {
         boolean result = updateSelected(x, y);
         if (result) {
-            StartMove(selectedColumn, selectedRow);
+            StartMove(selectedX, selectedY);
         }
         return result;
     }
@@ -269,8 +298,9 @@ public class Nonogram {
     public boolean KeepSelectCell(float x, float y, int type) {
         boolean result = updateSelected(x, y);
         if (result) {
-            solutionProcess = temporarySolution;
-            solutionProcess.AddMove(startMoveX, startMoveY, selectedColumn, selectedRow, type);
+            solutionProcess.FillSolution( temporarySolution );
+            solutionProcess.AddMove(startMoveX, startMoveY,
+                    selectedX, selectedY, type, false);
         }
         return result;
     }
@@ -278,35 +308,43 @@ public class Nonogram {
     public boolean EndSelectCell(float x, float y, int type) {
         boolean result = updateSelected(x, y);
         if (result) {
-            endMove(selectedColumn, selectedRow, type);
+            endMove(selectedX, selectedY, type);
         }
         return result;
     }
 
     private boolean updateSelected(float x, float y) {
-        if (x < startX
-                || y < startY
-                || x > startX + cellSize * (paramsWidth + width)
-                || y > startY + cellSize * (paramsHeight + height)) {
+        int tmpSelectedX = (int)((x - startX) / cellSize) - paramsWidth;
+        int tmpSelectedY = (int)((y - startY) / cellSize) - paramsHeight;
+        if (tmpSelectedX < 0 || tmpSelectedX >= width
+                || tmpSelectedY  < 0 || tmpSelectedY >= height) {
             return false;
         } else {
-            selectedColumn = (int)((x - startX) / cellSize);
-            selectedRow = (int)((y - startY) / cellSize);
+            selectedX = tmpSelectedX;
+            selectedY = tmpSelectedY;
             return true;
         }
     }
 
     private void StartMove(int x, int y) {
-        temporarySolution = solutionProcess;
+        temporarySolution = new SolutionProcess(solutionProcess);
         startMoveX = x;
         startMoveY = y;
     }
 
     private void endMove(int x, int y, int type) {
-        temporarySolution.AddMove(startMoveX, startMoveY, x, y, type);
+        solutionProcess.FillSolution( temporarySolution );
+        solutionProcess.AddMove(startMoveX, startMoveY, x, y, type, true);
         startMoveX = -1;
         startMoveY = -1;
-        solutionProcess = temporarySolution;
+    }
+
+    public void Undo() {
+        solutionProcess.Undo();
+    }
+
+    public void  Redo() {
+        solutionProcess.Redo();
     }
 
 }

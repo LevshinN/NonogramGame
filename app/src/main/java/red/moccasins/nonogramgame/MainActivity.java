@@ -62,6 +62,8 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        mNonogramTable = (NonoView) findViewById(R.id.nonogram);
+
         initializeNonogram();
     }
 
@@ -131,7 +133,7 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-        ((NonoView) findViewById(R.id.nonogram)).InitNewNonogram(task);
+        mNonogramTable.InitNewNonogram(task);
     }
 
     private String  convertStreamToString(InputStream is) throws IOException {
@@ -162,6 +164,12 @@ public class MainActivity extends AppCompatActivity
                         break;
                     case R.id.action_space:
                         mNonogramTable.setInputMode(0);
+                        break;
+                    case R.id.action_undo:
+                        mNonogramTable.Undo();
+                        break;
+                    case R.id.action_redo:
+                        mNonogramTable.Redo();
                         break;
                     default:
                         break;

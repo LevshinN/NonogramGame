@@ -93,7 +93,7 @@ public class NonoView extends View {
                     return super.onTouchEvent(event);
                 }
             case (MotionEvent.ACTION_UP):
-                touch = nonogram.KeepSelectCell(event.getX(), event.getY(), inputMode);
+                touch = nonogram.EndSelectCell(event.getX(), event.getY(), inputMode);
                 if (touch) {
                     invalidate();
                     return true;
@@ -109,5 +109,15 @@ public class NonoView extends View {
 
     public void setInputMode(int mode) {
         inputMode = mode;
+    }
+
+    public void Undo() {
+        nonogram.Undo();
+        invalidate();
+    }
+
+    public void Redo() {
+        nonogram.Redo();
+        invalidate();
     }
 }
